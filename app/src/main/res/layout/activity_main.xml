@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  tools:context=".activities.MainActivity">
+
+  <TextView
+    android:id="@+id/historyDay"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="历史上的今天"/>
+
+  <TextView
+    android:id="@+id/listBtn"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:text="两个list联动" />
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:paddingTop="7dp"
+    android:background="@drawable/hot_fire"
+    android:textSize="10dp"
+    android:textColor="@color/white"
+    android:text="9"/>
+
+  <com.facebook.drawee.view.SimpleDraweeView
+    android:id="@+id/imageView"
+    android:layout_width="327dp"
+    android:layout_height="413dp"
+    app:roundedCornerRadius="16dp"
+    app:failureImage="@color/teal_200"
+    app:overlayImage="@drawable/content_achievement_milestone" />
+
+</LinearLayout>
