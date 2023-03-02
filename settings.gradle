@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "audiotoon-android"
+rootProject.name = "FunnyTest"
 include ':app'
