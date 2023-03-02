@@ -7,6 +7,7 @@ import android.view.View
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.view.SimpleDraweeView
 import com.yuanm.funneytest.R
+import com.yuanm.funneytest.utils.AppUtil
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
   private val toHistory: View get() = findViewById(R.id.historyDay)
@@ -16,7 +17,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Fresco.initialize(this)
     setContentView(R.layout.activity_main)
     toHistory.setOnClickListener(this)
     goToTwoList.setOnClickListener(this)

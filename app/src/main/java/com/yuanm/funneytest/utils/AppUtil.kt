@@ -1,20 +1,18 @@
 package com.yuanm.funneytest.utils
 
 import android.app.Application
+import java.lang.Exception
 
 object AppUtil {
 
-  private var sharedApplication: Application? = null
+  private var application: Application? = null
 
   fun app(application: Application) {
-    sharedApplication = application
+    this.application = application
   }
 
-//  fun getContext(): Context {
-//    if (sharedApplication == null) {
-//
-//    }
-//    return sharedApplication
-//  }
+  fun app(): Application {
+    return application ?: throw RuntimeException("需要在Application初始化时设置application")
+  }
 
 }
