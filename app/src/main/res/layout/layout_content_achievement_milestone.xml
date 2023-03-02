@@ -6,7 +6,7 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content">
 
-  <mobi.mangatoon.widget.view.circle.RCRelativeLayout
+  <com.yuanm.widget.view.circle.RCRelativeLayout
     android:id="@+id/bigImgWrapper"
     android:layout_width="327dp"
     android:layout_height="413dp"
@@ -28,9 +28,9 @@
       android:layout_height="match_parent"
       android:src="@drawable/content_achievement_milestone" />
 
-  </mobi.mangatoon.widget.view.circle.RCRelativeLayout>
+  </com.yuanm.widget.view.circle.RCRelativeLayout>
 
-  <mobi.mangatoon.widget.textview.MTypefaceTextView
+  <com.yuanm.widget.textview.MTypefaceTextView
     android:id="@+id/calorificTv"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
     app:layout_constraintStart_toStartOf="@id/bigImgWrapper"
     app:layout_constraintTop_toBottomOf="@id/calorificTv">
 
-    <mobi.mangatoon.widget.textview.MTypefaceTextView
+    <com.yuanm.widget.textview.MTypefaceTextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="@string/icon_honour_left"
@@ -62,7 +62,7 @@
       app:fontEnum="iconTypeface" />
 
 
-    <mobi.mangatoon.widget.textview.MTypefaceTextView
+    <com.yuanm.widget.textview.MTypefaceTextView
       android:id="@+id/achievementTv"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -72,7 +72,7 @@
       android:textSize="40dp"
       tools:text="500M" />
 
-    <mobi.mangatoon.widget.textview.MTypefaceTextView
+    <com.yuanm.widget.textview.MTypefaceTextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="@string/icon_honour_right"
@@ -81,7 +81,7 @@
       app:fontEnum="iconTypeface" />
   </LinearLayout>
 
-  <mobi.mangatoon.widget.view.circle.RCRelativeLayout
+  <com.yuanm.widget.view.circle.RCRelativeLayout
     android:id="@+id/coverImageWrapper"
     android:layout_width="108dp"
     android:layout_height="143dp"
@@ -98,9 +98,9 @@
       android:layout_height="143dp"
       android:scaleType="centerCrop"/>
 
-  </mobi.mangatoon.widget.view.circle.RCRelativeLayout>
+  </com.yuanm.widget.view.circle.RCRelativeLayout>
 
-  <mobi.mangatoon.widget.textview.MTypefaceTextView
+  <com.yuanm.widget.textview.MTypefaceTextView
     android:id="@+id/title"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
@@ -116,7 +116,7 @@
     app:layout_constraintTop_toBottomOf="@id/coverImageWrapper"
     tools:text="My Son is A Matchmaker" />
 
-  <mobi.mangatoon.widget.textview.MTypefaceTextView
+  <com.yuanm.widget.textview.MTypefaceTextView
     android:id="@+id/subtitle"
     android:layout_width="0dp"
     android:layout_height="wrap_content"

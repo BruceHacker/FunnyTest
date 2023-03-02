@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
-  package="mobi.mangatoon.audiotoon">
+  package="com.yuanm.funneytest">
 
   <application
-    android:name=".MyApplication"
+    android:name="com.yuanm.funneytest.MyApplication"
     android:allowBackup="true"
     android:dataExtractionRules="@xml/data_extraction_rules"
     android:fullBackupContent="@xml/backup_rules"
@@ -15,7 +15,7 @@
     android:theme="@style/Theme.Audiotoonandroid"
     tools:targetApi="31">
     <activity
-      android:name=".activities.MainActivity"
+      android:name="com.yuanm.funneytest.activities.MainActivity"
       android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -24,7 +24,7 @@
       </intent-filter>
     </activity>
     <activity
-      android:name=".activities.HistoryMainActivity"
+      android:name="com.yuanm.funneytest.activities.HistoryMainActivity"
       android:exported="false" />
   </application>
 
