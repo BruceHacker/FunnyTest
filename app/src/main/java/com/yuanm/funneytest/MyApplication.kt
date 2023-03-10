@@ -1,6 +1,7 @@
 package com.yuanm.funneytest
 
 import android.app.Application
+import android.util.Log
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.yuanm.funneytest.utils.AppUtil
 
@@ -12,6 +13,7 @@ class MyApplication : Application() {
   }
 
   private fun initApp() {
+    Log.d("wymt", "application初始化设置")
     AppUtil.app(this)
     Fresco.initialize(this)
   }

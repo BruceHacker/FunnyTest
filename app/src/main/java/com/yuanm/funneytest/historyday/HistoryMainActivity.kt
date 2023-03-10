@@ -1,4 +1,4 @@
-package com.yuanm.funneytest.activities
+package com.yuanm.funneytest.historyday
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
