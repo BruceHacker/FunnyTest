@@ -1,0 +1,8 @@
+node_modules
+dist
+release
+.temp
+.gradle
+.idea
+build
+local.properties
