@@ -1,5 +1,6 @@
 package com.yuanm.funneytest.imagevideo
 
+import android.graphics.Bitmap
 import android.view.Surface
 
 class GLEncodeCore(private val width: Int, private val height: Int) {
@@ -12,9 +13,27 @@ class GLEncodeCore(private val width: Int, private val height: Int) {
     EncodeProgram(width, height)
   }
 
-  fun buildEGLSuraface(surface: Surface) {
+  fun buildEGLSurface(surface: Surface) {
+    // 构建EGL环境
     eglEnv.setUpEnv().buildWindowsSurface(surface)
     encodeProgram.build()
   }
+
+  /**
+   * @param bitmap raw bitmap to texture
+   * @presentTime 纳秒，当前帧时间
+   */
+  fun drainFrame(bitmap: Bitmap, presentTime: Long) {
+    encodeProgram.renderBitmap(bitmap)
+    // 给渲染的这一帧设置一个时间戳
+    eglEnv.setPresentationTime(presentTime)
+    eglEnv.swapBuffers()
+  }
+
+  fun release() {
+    eglEnv.release()
+    encodeProgram.release()
+  }
+
 
 }

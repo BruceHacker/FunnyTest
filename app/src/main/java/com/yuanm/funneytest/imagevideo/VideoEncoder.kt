@@ -5,12 +5,15 @@ import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
+import android.util.Log
 import android.view.Surface
 import java.io.File
 import java.io.IOException
 
-class VideoEncoder(private val width: Int, private val height: Int, private val bitRate: Int, frameRate: Int = 24,
+class VideoEncoder(private val width: Int, private val height: Int, private val bitRate: Int, var frameRate: Int = 24,
   frameInterval: Int = 5) {
+
+  private val TAG = "Video_VideoEncoder"
 
   private val codec: MediaCodec
 
@@ -28,9 +31,17 @@ class VideoEncoder(private val width: Int, private val height: Int, private val 
     GLEncodeCore(width, height)
   }
 
+  private val bufferInfo by lazy {
+    MediaCodec.BufferInfo()
+  }
+
   private lateinit var inputSurface: Surface
 
-  private lateinit var mediaMuxer: MediaMuxer
+  private var mediaMuxer: MediaMuxer? = null
+
+  private var muxerStarted: Boolean = false
+  private var trackIndex: Int = 0
+
 
   init {
     try {
@@ -39,7 +50,6 @@ class VideoEncoder(private val width: Int, private val height: Int, private val 
       throw RuntimeException("codec init failed $e")
     }
   }
-
 
 
   fun start(outputPath: String) {
@@ -55,27 +65,59 @@ class VideoEncoder(private val width: Int, private val height: Int, private val 
       throw RuntimeException("create media muxer failed $e")
     }
     codec.start()
-    encodeCore.buildEGLSuraface(inputSurface)
+    encodeCore.buildEGLSurface(inputSurface)
   }
 
 
   fun drainFrame(bitmap: Bitmap, index: Int) {
-    drainFrame(bitmap, index * 1000L)
+    // 每张图片持续5帧时间
+    val presentTime = index * 1000000000L / frameRate * 10
+    encodeCore.drainFrame(bitmap, presentTime)
+    drainCoder(false)
   }
 
   fun drainEnd() {
-
+    drainCoder(true)
+    encodeCore.release()
+    codec.stop()
+    mediaMuxer?.stop()
+    mediaMuxer?.release()
+    mediaMuxer = null
   }
 
-  /**
-   * @bitmap : draw bitmap to texture
-   * @presentTime： 当前帧的时间
-   */
-  private fun drainFrame(bitmap: Bitmap, presentTime: Long) {
-
+  private fun drainCoder(endOfSteams: Boolean) {
+    if (endOfSteams) {
+      codec.signalEndOfInputStream()
+    }
+    val defTimeOut = 1000L
+    codec.handleOutputBuffer(bufferInfo, defTimeOut, {
+      if (muxerStarted) {
+        throw RuntimeException("already muxer started")
+      }
+      Log.d(TAG, "format changed ${codec.outputFormat}")
+      trackIndex = mediaMuxer!!.addTrack(codec.outputFormat)
+      mediaMuxer!!.start()
+      muxerStarted = true
+    }, {
+      val encodeData = codec.getOutputBuffer(it)
+      Log.d(TAG, "buffer info flag ${bufferInfo.flags}")
+      if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
+        bufferInfo.size = 0
+      }
+      if (bufferInfo.size != 0) {
+        if (!muxerStarted) {
+          throw RuntimeException("muxer hasn't started")
+        }
+        Log.d(TAG, "buffer info offset ${bufferInfo.offset} time is ${bufferInfo.presentationTimeUs}")
+        if (encodeData != null) {
+          encodeData.position(bufferInfo.offset)
+          encodeData.limit(bufferInfo.offset + bufferInfo.size)
+          mediaMuxer!!.writeSampleData(trackIndex, encodeData, bufferInfo)
+        }
+        codec.releaseOutputBuffer(it, false)
+      }
+    }, !endOfSteams)
   }
-
-
 
 
   // 获取当前设备可渲染的颜色空间模式

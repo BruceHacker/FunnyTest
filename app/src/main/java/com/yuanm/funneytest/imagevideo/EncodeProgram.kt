@@ -1,14 +1,22 @@
 package com.yuanm.funneytest.imagevideo
 
+import android.graphics.Bitmap
+import android.opengl.GLES11Ext
 import android.opengl.GLES20
+import android.opengl.GLUtils
 import android.util.Log
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.nio.FloatBuffer
+import java.nio.IntBuffer
+import javax.microedition.khronos.opengles.GL10
 
 /**
  * 用来编码的GPU程序
  */
 class EncodeProgram(private val width: Int, private val height: Int) {
 
-  private val TAG = "EncodeProgram"
+  private val TAG = "Video_EncodeProgram"
 
   /**
    * 逐行解释
@@ -46,11 +54,66 @@ class EncodeProgram(private val width: Int, private val height: Int) {
                 }
                 """
 
+  private val vertexBuffer by lazy {
+    val data = floatArrayOf(-1f, 1f, 0f, -1f, -1f, 0f, 1f, -1f, 0f, 1f, 1f, 0f)
+    val buffer = createFloatBuffer(data)
+    buffer.position(0)
+    buffer
+  }
+
+  private val texBuffer by lazy {
+    val buffer = createFloatBuffer(floatArrayOf(0f, 0f, 0f, 1f, 1f, 1f, 1f, 0f))
+    buffer.position(0)
+    buffer
+  }
+
+  private val indexBuffer by lazy {
+    val data = intArrayOf(0, 1, 2, 0, 3, 2)
+    val allocate = IntBuffer.allocate(data.size).put(data)
+    allocate.position(0)
+    allocate
+  }
+
 
   private var program = 0
+  private var posHandle: Int = -1
+  private var texHandle: Int = -1
+  private var textureHandle: Int = -1
+  private var textureID = 0
 
   fun build() {
     program = createProgram(VERTEX_SHADER, FRAGMENT_SHADER)
+    initLocation()
+  }
+
+  fun renderBitmap(bitmap: Bitmap) {
+    GLES20.glClear(GL10.GL_COLOR_BUFFER_BIT)
+
+    // 设置当前活动的纹理单元为纹理单元0
+    GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+    // 将纹理ID绑定到当前活动的纹理单元上
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureID)
+    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
+    bitmap.recycle()
+
+    // 顶点坐标
+    GLES20.glEnableVertexAttribArray(posHandle)
+    GLES20.glVertexAttribPointer(posHandle, 3, GLES20.GL_FLOAT, false, 12, vertexBuffer)
+
+    // 纹理坐标
+    GLES20.glEnableVertexAttribArray(texHandle)
+    GLES20.glVertexAttribPointer(texHandle, 2, GLES20.GL_FLOAT, false, 0, texBuffer)
+
+    GLES20.glUniform1i(texHandle, 0)
+    GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_INT, indexBuffer)
+
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, GLES20.GL_NONE)
+  }
+
+  // 释放纹理
+  fun release() {
+    val id = intArrayOf(textureID)
+    GLES20.glDeleteTextures(id.size, id, 0)
   }
 
 
@@ -125,6 +188,66 @@ class EncodeProgram(private val width: Int, private val height: Int) {
     return shader
   }
 
+  private fun initLocation() {
+    posHandle = getAttribLocation(program, "position")
+    texHandle = getAttribLocation(program, "aTexCoord")
+
+    textureHandle = getUniformLocation(program, "texture")
+    textureID = buildTextureId(GLES20.GL_TEXTURE_2D)
+
+    GLES20.glClearColor(0f, 0f, 0f, 0f)
+    GLES20.glViewport(0, 0, width, height)
+  }
+
+  private fun getAttribLocation(program: Int, name: String): Int {
+    val location = GLES20.glGetAttribLocation(program, name)
+    checkLocation(location, name)
+    return location
+  }
+
+  private fun getUniformLocation(program: Int, name: String): Int {
+    val uniform = GLES20.glGetUniformLocation(program, name)
+    checkLocation(uniform, name)
+    return uniform
+  }
+
+  /**
+   * 创建一个纹理对象，并且和ES绑定
+   *
+   * 生成Camera特殊的Texture
+   * 在Android中Camera产生的preview texture是一种特殊的格式传送的，因此shader里的纹理类型不是普通的sampler2D，而是samplerExternalOES，在shader
+   * 的头部也必须声明OES的扩展。
+   * 除此之外，external OES的纹理和Sampler2D在使用时没有区别
+   */
+  private fun buildTextureId(target: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES): Int {
+    val ids = IntArray(1)
+    GLES20.glGenTextures(1, ids, 0)
+    checkGlError("create texture check")
+    val id = ids[0]
+    bindAndSetTexture(target, id)
+    return id
+  }
+
+  private fun bindAndSetTexture(target: Int, id: Int) {
+    // 这里的绑定纹理是将GPU的纹理数据和ID对应起来，载入纹理到此ID处
+    // 渲染时绑定纹理，是绑定纹理ID到激活的纹理单元
+    GLES20.glBindTexture(target, id)
+    checkGlError("bind texture : $id check")
+
+    // 设置纹理参数、过滤器放大缩小
+    GLES20.glTexParameteri(target, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
+    GLES20.glTexParameteri(target, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR)
+
+    GLES20.glTexParameteri(target, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
+    GLES20.glTexParameteri(target, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
+  }
+
+
+  private fun checkLocation(location: Int, label: String) {
+    if (location < 0) {
+      throw RuntimeException("Unable to locate '$label' in program")
+    }
+  }
 
   // todo: 可抽象成扩展方法
   private fun checkGlError(op: String) {
@@ -132,6 +255,20 @@ class EncodeProgram(private val width: Int, private val height: Int) {
     if (error != GLES20.GL_NO_ERROR) {
       throw RuntimeException("$op: glError $error and msg is ${Integer.toHexString(error)}")
     }
+  }
+
+  // todo: 需要抽象到工具类中
+  private fun createFloatBuffer(array: FloatArray): FloatBuffer {
+    val buffer = ByteBuffer
+      // 分配顶点坐标分量分数 * Float占的Byte位数
+      .allocateDirect(array.size * 4)
+      // 按照本地字节序排序
+      .order(ByteOrder.nativeOrder())
+      // Byte类型转Float类型
+      .asFloatBuffer()
+    // 将Dalvik的内存数据复制到Native内存中
+    buffer.put(array).position(0)
+    return buffer
   }
 
 

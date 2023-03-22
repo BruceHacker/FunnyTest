@@ -53,6 +53,8 @@ import java.io.File
  */
 class ImageVideoActivity : AppCompatActivity() {
 
+  private val TAG = "Video_ImageVideoAct"
+
   // 测试文件夹，里面需要放置好图片
   private val encodePicDir =
     TextUtils.concat(Environment.getExternalStorageDirectory().path, "/Download/decode").toString()
@@ -74,13 +76,19 @@ class ImageVideoActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_image_video)
-    playBtn.isEnabled = false
+    initView()
     initClickListener()
+  }
+
+  private fun initView() {
+    createBtn.isEnabled = true
+    playBtn.isEnabled = false
   }
 
   private fun initClickListener() {
     createBtn.setOnClickListener {
       createVideo()
+      it.isEnabled = false
     }
     playBtn.setOnClickListener {
       // todo: 播放生成的视频
@@ -89,7 +97,7 @@ class ImageVideoActivity : AppCompatActivity() {
 
   private fun createVideo() {
     handler.post {
-      Log.d("wymt", "thread ${Thread.currentThread().name} ")
+      Log.d(TAG, "thread ${Thread.currentThread().name} ")
       val videoEncode = VideoEncoder(1080, 1920, 1800000, 24)
       videoEncode.start(
         Environment.getExternalStorageDirectory().path + "/Download/yuanm${System.currentTimeMillis()}.mp4")
@@ -100,8 +108,11 @@ class ImageVideoActivity : AppCompatActivity() {
         }
       }
       videoEncode.drainEnd()
-      playBtn.isEnabled = true
-      Toast.makeText(this, "视频已生成", Toast.LENGTH_SHORT).show()
+      runOnUiThread {
+        createBtn.isEnabled = true
+        playBtn.isEnabled = true
+        Toast.makeText(this, "视频已生成", Toast.LENGTH_SHORT).show()
+      }
     }
   }
 
