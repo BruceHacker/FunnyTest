@@ -1,22 +1,4 @@
-package com.yuanm.funneytest.utils
-
-import android.net.Uri
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import com.facebook.common.executors.CallerThreadExecutor
-import com.facebook.common.references.CloseableReference
-import com.facebook.datasource.BaseDataSubscriber
-import com.facebook.datasource.DataSource
-import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.imagepipeline.common.ImageDecodeOptions
-import com.facebook.imagepipeline.filter.RenderScriptBlurFilter
-import com.facebook.imagepipeline.image.CloseableBitmap
-import com.facebook.imagepipeline.image.CloseableImage
-import com.facebook.imagepipeline.postprocessors.BlurPostProcessor
-import com.facebook.imagepipeline.request.ImageRequestBuilder
-import java.io.IOException
+package com.yuanm.common.utils
 
 class ImageViewUtil {
 

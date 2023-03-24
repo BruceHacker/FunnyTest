@@ -3,7 +3,7 @@ package com.yuanm.funneytest
 import android.app.Application
 import android.util.Log
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.yuanm.funneytest.utils.AppUtil
+import com.yuanm.common.utils.AppUtil
 
 class MyApplication : Application() {
 

@@ -1,4 +1,4 @@
-package com.yuanm.funneytest.utils;
+package com.yuanm.common.utils;
 
 public class ImageViewUtils {
 
