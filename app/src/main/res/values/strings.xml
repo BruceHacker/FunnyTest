@@ -2,4 +2,7 @@
   <string name="app_name">FunnyTest</string>
   <string name="cart">购物车</string>
   <string name="cart_clear">清空全部</string>
+  <string name="test">1.Note: Tanggal publikasi tidak bisa lebih kecil dari episode sebelumnya dan tidak lebih besar dari episode selanjutnya.
+    \n2. Setelah rilis bab, pengaturan jadwal terbit juga dapat disunting dan tidak akan memengaruhi status review bab.
+    \n3. Perhatikan: Jika waktu terbit yang diatur sangat dekat dengan waktu saat itu, maka mungkin akan menyebabkan waktu terbit gagal karena review belum selesai.</string>
 </resources>

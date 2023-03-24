@@ -21,34 +21,22 @@ import java.io.File
  * 工作流程中所有环节都必须处在同一线程
  *
  * 流程：
- * 1.配置MediaCodeC、配置MediaMuxer、EGL环境初始化并绑定MediaCodec的InputSurface、GPU程序初始化
- * 2.拿到图片File的Bitmap
- * 3.GPU程序将Bitmap绘制到纹理上
- * 4.EGL环境调用swapBuffers提交数据到MediaCodec
- * 5.MediaCodec拿到可用输出，使用MediaMuxer写入视频文件
- * 重复2-5
+ * 1.准备好需要用来制作视频的所有图片
+ * 2.配置MediaCodeC（设置MIME类型、视频宽度和高度、比特率、帧速率等参数）
+ * 3.通过 MediaCodec.createInputSurface()获取InputSurface对象
+ * 4.配置MediaMuxer、EGL环境初始化并绑定MediaCodec的InputSurface、GPU程序初始化
+ * 5.将图片数据加载到内存中，例如使用 Bitmap 或者其他图像处理库。
+ * 6.GPU程序将Bitmap绘制到纹理上
+ * 7.EGL环境调用swapBuffers提交数据到MediaCodec
+ * 8.MediaCodec拿到可用输出，使用MediaMuxer写入视频文件
+ * 9.重复5-8
+ * 10.释放资源、关闭MediaCodec
+ *
+ * 建议：在处理大量图片时，应该使用异步方式处理，避免阻塞主线程。
  *
  * 参考博客：
- * 1.https://www.jianshu.com/p/54a702be01e1 or https://cloud.tencent.com/developer/article/1578977
- * 2.https://blog.csdn.net/JadynAi/article/details/89847026 or https://cloud.tencent.com/developer/article/1543042
- *
- *
- * ChatGPT的建议步骤：
- * 1.准备好需要用来制作视频的所有图片。
- * 2.将图片数据加载到内存中，例如使用 Bitmap 或者其他图像处理库。
- * 3.实例化一个 MediaCodec 对象并进行配置，设置 MIME 类型、视频宽度和高度、比特率等参数。
- * 4.创建一个 SurfaceView 用于渲染视频帧。
- * 5.通过 MediaCodec.createInputSurface() 获取输入 Surface 对象，并将其传递给渲染器。
- * 6.将每个图片数据编码成视频帧并通过输入 Surface 发送到 MediaCodec 中。
- * 7.获取 MediaCodec 输出的视频帧数据，并将其传递给渲染器。
- * 8.使用渲染器对视频帧进行渲染，并将结果展示在 SurfaceView 中。
- * 9.循环执行步骤 6 - 8 直到所有图片都被编码以形成完整的视频流。
- * 10.释放资源并关闭 MediaCodec 对象。
- * 建议：
- * 1.在处理大量图片时，应该使用异步方式处理，避免阻塞主线程。
- * 2.考虑使用硬件加速技术，例如 OpenGL ES，以提高性能和效率。
- * 3.了解一些关于视频编解码和容器格式的知识，有助于更好地理解和调试代码。
- * 4.在开发过程中，可以使用 Android Studio 提供的性能分析工具进行调试和优化。
+ * 1.https://ailo.fun/2019/04/01/2019-04-01-MediaCodeC-encoder1/
+ * 2.https://www.jianshu.com/p/54a702be01e1
  *
  */
 class ImageVideoActivity : AppCompatActivity() {
