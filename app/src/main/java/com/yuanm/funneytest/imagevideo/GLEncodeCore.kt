@@ -15,7 +15,7 @@ class GLEncodeCore(private val width: Int, private val height: Int) {
 
   fun buildEGLSurface(surface: Surface) {
     // 构建EGL环境
-    eglEnv.setUpEnv().buildWindowsSurface(surface)
+    eglEnv.setUpEglEnv(surface)
     encodeProgram.build()
   }
 
